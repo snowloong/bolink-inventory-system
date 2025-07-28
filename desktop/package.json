@@ -1,0 +1,35 @@
+/*
+ * @Author: yaoruidong yaord@meix.com
+ * @Date: 2025-07-28 23:43:27
+ * @LastEditors: yaoruidong yaord@meix.com
+ * @LastEditTime: 2025-07-29 00:03:19
+ * @FilePath: /bolink-inventory-system/desktop/package.json
+ * @Description: 
+ * 
+ */
+{
+  "name": "bolink-inventory-desktop",
+  "version": "1.0.0",
+  "description": "博链科技新能源电池进销存管理系统桌面端",
+  "main": "index.js",
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "preview": "tauri dev --no-frontend"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.14.2",
+    "antd": "^5.8.0",
+    "axios": "^1.4.0",
+    "@reduxjs/toolkit": "^1.9.5",
+    "react-redux": "^8.1.1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.4.0",
+    "@vitejs/plugin-react": "^4.0.3",
+    "vite": "^4.4.5"
+  }
+}
