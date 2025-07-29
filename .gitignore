@@ -1,0 +1,8 @@
+.history
+backend/node_modules
+backend/dist
+backend/.env
+backend/.env.local
+backend/.env.development.local
+backend/.env.test.local
+backend/.env.production.local
