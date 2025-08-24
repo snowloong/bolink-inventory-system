@@ -19,7 +19,7 @@
 
 | 模块 | 原接口数量 | 整合后接口数量 | 状态 |
 |------|------------|----------------|------|
-| 01-基础数据管理 | 44个 | 4个 | ✅ 已完成 |
+| 01-基础数据管理 | 44个 | 3个 | ✅ 已完成 |
 | 02-采购管理 | 40个 | 5个 | ✅ 已完成 |
 | 03-库存管理 | 71个 | 7个 | ✅ 已完成 |
 | 04-销售管理 | 66个 | 5个 | ✅ 已完成 |
@@ -27,7 +27,7 @@
 | 06-安全管理 | 66个 | 6个 | ✅ 已完成 |
 | 07-报表统计 | 69个 | 5个 | ✅ 已完成 |
 | 08-系统管理 | 91个 | 6个 | ✅ 已完成 |
-| **总计** | **503个** | **42个** | **92%减少** |
+| **总计** | **503个** | **41个** | **92%减少** |
 
 ---
 
@@ -111,34 +111,144 @@
 ### 01-基础数据管理模块
 
 #### 产品管理接口
-| 方法 | 路径 | 描述 |
-|------|------|------|
-| GET | `/api/basic/products` | 获取产品列表 |
-| GET | `/api/basic/products/:id` | 获取产品详情 |
-| POST | `/api/basic/products` | 创建产品 |
-| POST | `/api/basic/products/:id` | 更新产品 |
-| POST | `/api/basic/products/:id/delete` | 删除产品 |
-| POST | `/api/basic/products/batch` | 产品批量导入 |
-| GET | `/api/basic/products/export` | 产品数据导出 |
-| POST | `/api/basic/products/validate-code` | 产品编码验证 |
-| POST | `/api/basic/products/:id/status` | 产品状态变更 |
-| GET | `/api/basic/products?include=specs` | 技术参数查询 |
-| POST | `/api/basic/products/certifications` | 认证信息管理 |
+| 方法 | 路径 | 描述 | 参数说明 |
+|------|------|------|----------|
+| POST | `/api/basic/products` | 产品管理统一接口 | `action`: create(创建)/list(列表)/detail(详情)/update(更新)/delete(删除)/batch-import(批量导入)/batch-export(批量导出)/batch-delete(批量删除)/validate-code(编码验证)/validate-model(型号验证)/enable(启用)/disable(停用)/discontinue(淘汰)/specs(技术参数)/update-specs(更新参数)/certifications(认证管理)/add-certification(添加认证)/remove-certification(移除认证)/statistics(统计)/report(报表) |
+
+**Action字典说明：**
+```typescript
+type ProductAction = 
+  // 基础CRUD操作
+  | 'create'    // 创建产品
+  | 'list'      // 查询产品列表
+  | 'detail'    // 获取产品详情
+  | 'update'    // 更新产品
+  | 'delete'    // 删除产品
+  
+  // 批量操作
+  | 'batch-import'  // 批量导入
+  | 'batch-export'  // 批量导出
+  | 'batch-delete'  // 批量删除
+  
+  // 验证操作
+  | 'validate-code' // 产品编码验证
+  | 'validate-model' // 型号重复验证
+  
+  // 状态管理
+  | 'enable'    // 启用产品
+  | 'disable'   // 停用产品
+  | 'discontinue' // 淘汰产品
+  
+  // 技术参数管理
+  | 'specs'     // 技术参数查询
+  | 'update-specs' // 更新技术参数
+  
+  // 认证管理
+  | 'certifications' // 认证信息管理
+  | 'add-certification' // 添加认证
+  | 'remove-certification' // 移除认证
+  
+  // 统计报表
+  | 'statistics' // 产品统计
+  | 'report'     // 生成报表
+```
+
+**不同action的请求示例：**
+- **创建产品**: `{"action": "create", "data": {"product_name": "18650锂电池", "model": "18650-2500mAh", "battery_type": "锂离子", "capacity": 2500, "voltage": 3.7}}`
+- **获取列表**: `{"action": "list", "params": {"page": 1, "size": 20, "battery_type": "锂离子", "status": "active"}}`
+- **获取详情**: `{"action": "detail", "params": {"id": 123}}`
+- **更新产品**: `{"action": "update", "params": {"id": 123}, "data": {...}}`
+- **删除产品**: `{"action": "delete", "params": {"id": 123}}`
+- **批量导入**: `{"action": "batch-import", "data": {"file": "base64编码的Excel文件", "template": "standard"}}`
+- **批量导出**: `{"action": "batch-export", "params": {"format": "excel", "filters": {...}}}`
+- **批量删除**: `{"action": "batch-delete", "data": {"ids": [1,2,3]}}`
+- **编码验证**: `{"action": "validate-code", "data": {"product_code": "P001"}}`
+- **型号验证**: `{"action": "validate-model", "data": {"model": "18650-2500mAh"}}`
+- **启用产品**: `{"action": "enable", "params": {"id": 123}}`
+- **停用产品**: `{"action": "disable", "params": {"id": 123}}`
+- **淘汰产品**: `{"action": "discontinue", "params": {"id": 123}}`
+- **技术参数**: `{"action": "specs", "params": {"id": 123}}`
+- **更新参数**: `{"action": "update-specs", "params": {"id": 123}, "data": {"specifications": {...}}`
+- **认证管理**: `{"action": "certifications", "params": {"id": 123}}`
+- **添加认证**: `{"action": "add-certification", "params": {"id": 123}, "data": {"certification": {...}}`
+- **移除认证**: `{"action": "remove-certification", "params": {"id": 123}, "data": {"certification_id": 456}}`
+- **统计分析**: `{"action": "statistics", "params": {"type": "category"}}`
+- **生成报表**: `{"action": "report", "data": {"report_type": "product_summary"}}`
 
 #### 供应商管理接口
-| 方法 | 路径 | 描述 |
-|------|------|------|
-| GET | `/api/basic/suppliers` | 获取供应商列表 |
-| GET | `/api/basic/suppliers/:id` | 获取供应商详情 |
-| POST | `/api/basic/suppliers` | 创建供应商 |
-| POST | `/api/basic/suppliers/:id` | 更新供应商 |
-| POST | `/api/basic/suppliers/:id/delete` | 删除供应商 |
-| POST | `/api/basic/suppliers/batch` | 供应商批量导入 |
-| GET | `/api/basic/suppliers/export` | 供应商数据导出 |
-| POST | `/api/basic/suppliers/validate-code` | 供应商编码验证 |
-| POST | `/api/basic/suppliers/:id/status` | 供应商状态变更 |
-| POST | `/api/basic/suppliers/qualifications` | 资质管理 |
-| GET | `/api/basic/suppliers?include=evaluations` | 评估记录查询 |
+| 方法 | 路径 | 描述 | 参数说明 |
+|------|------|------|----------|
+| POST | `/api/basic/suppliers` | 供应商管理统一接口 | `action`: create(创建)/list(列表)/detail(详情)/update(更新)/delete(删除)/batch-import(批量导入)/batch-export(批量导出)/batch-delete(批量删除)/validate-code(编码验证)/validate-name(名称验证)/enable(启用)/disable(停用)/blacklist(黑名单)/qualifications(资质管理)/add-qualification(添加资质)/update-qualification(更新资质)/expire-qualification(资质过期)/evaluations(评估记录)/add-evaluation(添加评估)/update-rating(更新评级)/cooperation-history(合作历史)/update-level(更新等级)/statistics(统计)/report(报表) |
+
+**Action字典说明：**
+```typescript
+type SupplierAction = 
+  // 基础CRUD操作
+  | 'create'    // 创建供应商
+  | 'list'      // 查询供应商列表
+  | 'detail'    // 获取供应商详情
+  | 'update'    // 更新供应商
+  | 'delete'    // 删除供应商
+  
+  // 批量操作
+  | 'batch-import'  // 批量导入
+  | 'batch-export'  // 批量导出
+  | 'batch-delete'  // 批量删除
+  
+  // 验证操作
+  | 'validate-code' // 供应商编码验证
+  | 'validate-name' // 供应商名称验证
+  
+  // 状态管理
+  | 'enable'    // 启用供应商
+  | 'disable'   // 停用供应商
+  | 'blacklist' // 加入黑名单
+  
+  // 资质管理
+  | 'qualifications' // 资质信息管理
+  | 'add-qualification' // 添加资质
+  | 'update-qualification' // 更新资质
+  | 'expire-qualification' // 资质过期处理
+  
+  // 评估管理
+  | 'evaluations' // 评估记录查询
+  | 'add-evaluation' // 添加评估
+  | 'update-rating' // 更新评级
+  
+  // 合作管理
+  | 'cooperation-history' // 合作历史
+  | 'update-level' // 更新合作等级
+  
+  // 统计报表
+  | 'statistics' // 供应商统计
+  | 'report'     // 生成报表
+```
+
+**不同action的请求示例：**
+- **创建供应商**: `{"action": "create", "data": {"supplier_name": "宁德时代新能源科技股份有限公司", "supplier_type": "制造商", "contact_info": {"address": "福建省宁德市", "contact_person": "张三", "phone": "0593-12345678"}}}`
+- **获取列表**: `{"action": "list", "params": {"page": 1, "size": 20, "supplier_type": "制造商", "cooperation_level": "战略"}}`
+- **获取详情**: `{"action": "detail", "params": {"id": 123}}`
+- **更新供应商**: `{"action": "update", "params": {"id": 123}, "data": {...}}`
+- **删除供应商**: `{"action": "delete", "params": {"id": 123}}`
+- **批量导入**: `{"action": "batch-import", "data": {"file": "base64编码的Excel文件", "template": "standard"}}`
+- **批量导出**: `{"action": "batch-export", "params": {"format": "excel", "filters": {...}}}`
+- **批量删除**: `{"action": "batch-delete", "data": {"ids": [1,2,3]}}`
+- **编码验证**: `{"action": "validate-code", "data": {"supplier_code": "S001"}}`
+- **名称验证**: `{"action": "validate-name", "data": {"supplier_name": "宁德时代"}}`
+- **启用供应商**: `{"action": "enable", "params": {"id": 123}}`
+- **停用供应商**: `{"action": "disable", "params": {"id": 123}}`
+- **加入黑名单**: `{"action": "blacklist", "params": {"id": 123}}`
+- **资质管理**: `{"action": "qualifications", "params": {"id": 123}}`
+- **添加资质**: `{"action": "add-qualification", "data": {"supplier_id": 123, "qualification_type": "ISO9001", "certificate_no": "ISO9001-2024-001", "issue_date": "2024-01-01", "expire_date": "2027-01-01"}}`
+- **更新资质**: `{"action": "update-qualification", "params": {"id": 123}, "data": {...}}`
+- **资质过期**: `{"action": "expire-qualification", "params": {"id": 123}}`
+- **评估记录**: `{"action": "evaluations", "params": {"id": 123}}`
+- **添加评估**: `{"action": "add-evaluation", "params": {"id": 123}, "data": {"evaluation": {...}}`
+- **更新评级**: `{"action": "update-rating", "params": {"id": 123}, "data": {"rating": "AAA"}}`
+- **合作历史**: `{"action": "cooperation-history", "params": {"id": 123}}`
+- **更新等级**: `{"action": "update-level", "params": {"id": 123}, "data": {"level": "战略"}}`
+- **统计分析**: `{"action": "statistics", "params": {"type": "performance"}}`
+- **生成报表**: `{"action": "report", "data": {"report_type": "supplier_summary"}}`
 
 #### 客户管理接口
 | 方法 | 路径 | 描述 | 参数说明 |
@@ -179,19 +289,79 @@ type CustomerAction =
 - **数据导出**: `{"action": "export", "params": {"format": "excel", "filters": {...}}}`
 
 #### 仓库管理接口
-| 方法 | 路径 | 描述 |
-|------|------|------|
-| GET | `/api/basic/warehouses` | 获取仓库列表 |
-| GET | `/api/basic/warehouses/:id` | 获取仓库详情 |
-| POST | `/api/basic/warehouses` | 创建仓库 |
-| POST | `/api/basic/warehouses/:id` | 更新仓库 |
-| POST | `/api/basic/warehouses/:id/delete` | 删除仓库 |
-| POST | `/api/basic/warehouses/batch` | 仓库批量导入 |
-| GET | `/api/basic/warehouses/export` | 仓库数据导出 |
-| POST | `/api/basic/warehouses/validate-code` | 仓库编码验证 |
-| POST | `/api/basic/warehouses/:id/status` | 仓库状态变更 |
-| POST | `/api/basic/warehouses/capacity-management` | 容量管理 |
-| GET | `/api/basic/warehouses/safety-config` | 安全配置管理 |
+| 方法 | 路径 | 描述 | 参数说明 |
+|------|------|------|----------|
+| POST | `/api/basic/warehouses` | 仓库管理统一接口 | `action`: create(创建)/list(列表)/detail(详情)/update(更新)/delete(删除)/batch-import(批量导入)/batch-export(批量导出)/batch-delete(批量删除)/validate-code(编码验证)/validate-name(名称验证)/enable(启用)/disable(停用)/maintenance(维护)/capacity-management(容量管理)/update-capacity(更新容量)/capacity-alert(容量预警)/safety-config(安全配置)/update-safety(更新安全)/safety-check(安全检查)/zones(库区管理)/add-zone(添加库区)/update-zone(更新库区)/statistics(统计)/report(报表) |
+
+**Action字典说明：**
+```typescript
+type WarehouseAction = 
+  // 基础CRUD操作
+  | 'create'    // 创建仓库
+  | 'list'      // 查询仓库列表
+  | 'detail'    // 获取仓库详情
+  | 'update'    // 更新仓库
+  | 'delete'    // 删除仓库
+  
+  // 批量操作
+  | 'batch-import'  // 批量导入
+  | 'batch-export'  // 批量导出
+  | 'batch-delete'  // 批量删除
+  
+  // 验证操作
+  | 'validate-code' // 仓库编码验证
+  | 'validate-name' // 仓库名称验证
+  
+  // 状态管理
+  | 'enable'    // 启用仓库
+  | 'disable'   // 停用仓库
+  | 'maintenance' // 维护模式
+  
+  // 容量管理
+  | 'capacity-management' // 容量管理
+  | 'update-capacity' // 更新容量
+  | 'capacity-alert' // 容量预警
+  
+  // 安全配置
+  | 'safety-config' // 安全配置管理
+  | 'update-safety' // 更新安全配置
+  | 'safety-check' // 安全检查
+  
+  // 库区管理
+  | 'zones'     // 库区管理
+  | 'add-zone'  // 添加库区
+  | 'update-zone' // 更新库区
+  
+  // 统计报表
+  | 'statistics' // 仓库统计
+  | 'report'     // 生成报表
+```
+
+**不同action的请求示例：**
+- **创建仓库**: `{"action": "create", "data": {"warehouse_name": "深圳主仓库", "warehouse_type": "主仓", "address": "广东省深圳市宝安区", "specifications": {"area": 5000, "capacity": 10000}}}`
+- **获取列表**: `{"action": "list", "params": {"page": 1, "size": 20, "warehouse_type": "主仓"}}`
+- **获取详情**: `{"action": "detail", "params": {"id": 123}}`
+- **更新仓库**: `{"action": "update", "params": {"id": 123}, "data": {...}}`
+- **删除仓库**: `{"action": "delete", "params": {"id": 123}}`
+- **批量导入**: `{"action": "batch-import", "data": {"file": "base64编码的Excel文件", "template": "standard"}}`
+- **批量导出**: `{"action": "batch-export", "params": {"format": "excel", "filters": {...}}}`
+- **批量删除**: `{"action": "batch-delete", "data": {"ids": [1,2,3]}}`
+- **编码验证**: `{"action": "validate-code", "data": {"warehouse_code": "W001"}}`
+- **名称验证**: `{"action": "validate-name", "data": {"warehouse_name": "深圳主仓库"}}`
+- **启用仓库**: `{"action": "enable", "params": {"id": 123}}`
+- **停用仓库**: `{"action": "disable", "params": {"id": 123}}`
+- **维护模式**: `{"action": "maintenance", "params": {"id": 123}}`
+- **容量管理**: `{"action": "capacity-management", "data": {"warehouse_id": 789, "current_usage": 7500, "alert_threshold": 8000}}`
+- **更新容量**: `{"action": "update-capacity", "params": {"id": 123}, "data": {"capacity": 12000}}`
+- **容量预警**: `{"action": "capacity-alert", "params": {"id": 123}}`
+- **安全配置**: `{"action": "safety-config", "params": {"id": 123}}`
+- **更新安全**: `{"action": "update-safety", "params": {"id": 123}, "data": {"safety_config": {...}}`
+- **安全检查**: `{"action": "safety-check", "params": {"id": 123}}`
+- **库区管理**: `{"action": "zones", "params": {"id": 123}}`
+- **添加库区**: `{"action": "add-zone", "params": {"id": 123}, "data": {"zone_info": {...}}`
+- **更新库区**: `{"action": "update-zone", "params": {"id": 123}, "data": {"zone_info": {...}}`
+- **统计分析**: `{"action": "statistics", "params": {"type": "utilization"}}`
+- **生成报表**: `{"action": "report", "data": {"report_type": "warehouse_summary"}}`
 
 ---
 
@@ -1573,7 +1743,7 @@ type SystemMonitoringAction =
 ### 按模块统计
 | 模块 | 原接口数量 | 整合后接口数量 | 状态 |
 |------|------------|----------------|------|
-| 01-基础数据管理 | 44个 | 4个 | ✅ 已完成 |
+| 01-基础数据管理 | 44个 | 3个 | ✅ 已完成 |
 | 02-采购管理 | 40个 | 5个 | ✅ 已完成 |
 | 03-库存管理 | 71个 | 7个 | ✅ 已完成 |
 | 04-销售管理 | 66个 | 5个 | ✅ 已完成 |
@@ -1592,6 +1762,6 @@ type SystemMonitoringAction =
 ---
 
 **文档状态：** ✅ 已完成  
-**接口总数：** 42个（整合后）  
+**接口总数：** 41个（整合后）  
 **减少比例：** 92%以上  
 **最后更新：** 2025-08-24
