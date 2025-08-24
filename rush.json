@@ -411,5 +411,21 @@
     //   "reviewCategory": "tools",
     //   "tags": [ "tools" ]
     // }
+    {
+      "packageName": "frontend",
+      "projectFolder": "frontend",
+      "reviewCategory": "production",
+      "tags": [
+        "frontend"
+      ]
+    },
+    {
+      "packageName": "backend",
+      "projectFolder": "backend",
+      "reviewCategory": "production",
+      "tags": [
+        "backend"
+      ]
+    }
   ]
 }
