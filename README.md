@@ -203,7 +203,7 @@ bolink-inventory-system/
 
 1. **克隆项目**
 ```bash
-git clone https://github.com/your-org/bolink-inventory-system.git
+git clone https://github.com/snowloong/bolink-inventory-system.git
 cd bolink-inventory-system
 ```
 
@@ -248,7 +248,6 @@ npm run dev
 - **前端应用**: http://localhost:3000
 - **后端API**: http://localhost:3001
 - **API文档**: http://localhost:3001/api/docs
-- **数据库管理**: http://localhost:8080 (pgAdmin)
 
 ### 生产部署
 
@@ -389,10 +388,10 @@ kubectl get pods -n bolink-system
 
 ## 📞 联系我们
 
-- **项目地址**: https://github.com/your-org/bolink-inventory-system
-- **问题反馈**: https://github.com/your-org/bolink-inventory-system/issues
+- **项目地址**: https://github.com/snowloong/bolink-inventory-system
+- **问题反馈**: https://github.com/snowloong/bolink-inventory-system/issues
 - **邮箱**: iamfinleyyao1997@163.com
-- **文档地址**: https://github.com/your-org/bolink-inventory-system/tree/main/documents
+- **文档地址**: https://github.com/snowloong/bolink-inventory-system/tree/main/documents
 
 ## 🙏 致谢
 

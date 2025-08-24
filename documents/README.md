@@ -90,7 +90,7 @@
 
 1. **克隆项目**
 ```bash
-git clone https://github.com/your-org/bolink-inventory-system.git
+git clone https://github.com/snowloong/bolink-inventory-system.git
 cd bolink-inventory-system
 ```
 
@@ -249,8 +249,8 @@ kubectl apply -f k8s/
 
 ## 📞 联系我们
 
-- 项目地址: https://github.com/your-org/bolink-inventory-system
-- 问题反馈: https://github.com/your-org/bolink-inventory-system/issues
+- 项目地址: https://github.com/snowloong/bolink-inventory-system
+- 问题反馈: https://github.com/snowloong/bolink-inventory-system/issues
 - 邮箱: iamfinleyyao1997@163.com
 
 ---
